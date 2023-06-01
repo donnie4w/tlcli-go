@@ -11,7 +11,7 @@ import (
 	"errors"
 )
 
-func CreateTable(tableName string, columnsName []string, indexs []string) (err error) {
+func (this *Client) CreateTable(tableName string, columnsName []string, indexs []string) (err error) {
 	tb := &TableBean{}
 	tb.Name = tableName
 	tb.Columns = make(map[string][]byte, 0)
@@ -26,7 +26,7 @@ func CreateTable(tableName string, columnsName []string, indexs []string) (err e
 			}
 		}
 	}
-	if a, err := TlClient.Conn.Create(context.Background(), tb); err == nil {
+	if a, err := this.create(context.Background(), tb); err == nil {
 		if !a.Ok {
 			return errors.New(a.ErrorDesc)
 		}
@@ -36,7 +36,7 @@ func CreateTable(tableName string, columnsName []string, indexs []string) (err e
 	return
 }
 
-func AlterTable(tableName string, columnsName []string, indexs []string) (err error) {
+func (this *Client) AlterTable(tableName string, columnsName []string, indexs []string) (err error) {
 	tb := &TableBean{}
 	tb.Name = tableName
 	tb.Columns = make(map[string][]byte, 0)
@@ -51,7 +51,7 @@ func AlterTable(tableName string, columnsName []string, indexs []string) (err er
 			}
 		}
 	}
-	if a, err := TlClient.Conn.Alter(context.Background(), tb); err == nil {
+	if a, err := this.alter(context.Background(), tb); err == nil {
 		if !a.Ok {
 			return errors.New(a.ErrorDesc)
 		}
@@ -61,11 +61,11 @@ func AlterTable(tableName string, columnsName []string, indexs []string) (err er
 	return
 }
 
-func Insert(tableName string, columnsMap map[string][]byte) (seq int64, _err error) {
+func (this *Client) Insert(tableName string, columnsMap map[string][]byte) (seq int64, _err error) {
 	tb := &TableBean{}
 	tb.Name = tableName
 	tb.Columns = columnsMap
-	if ack, err := TlClient.Conn.Insert(context.Background(), tb); err == nil {
+	if ack, err := this.insert(context.Background(), tb); err == nil {
 		if ack.Ack.Ok {
 			seq = ack.Seq
 		} else {
@@ -77,32 +77,32 @@ func Insert(tableName string, columnsMap map[string][]byte) (seq int64, _err err
 	return
 }
 
-func SelectById(tableName string, id int64) (_db *DataBean, err error) {
-	return TlClient.Conn.SelectById(context.Background(), tableName, id)
+func (this *Client) SelectById(tableName string, id int64) (_db *DataBean, err error) {
+	return this.selectById(context.Background(), tableName, id)
 }
 
-func SelectByIdx(tableName string, columnName string, columnValue []byte) (_db *DataBean, err error) {
-	return TlClient.Conn.SelectByIdx(context.Background(), tableName, columnName, columnValue)
+func (this *Client) SelectByIdx(tableName string, columnName string, columnValue []byte) (_db *DataBean, err error) {
+	return this.selectByIdx(context.Background(), tableName, columnName, columnValue)
 }
 
-func SelectsByIdLimit(tableName string, startId, limit int64) (_db []*DataBean, err error) {
-	return TlClient.Conn.SelectsByIdLimit(context.Background(), tableName, startId, limit)
+func (this *Client) SelectsByIdLimit(tableName string, startId, limit int64) (_db []*DataBean, err error) {
+	return this.selectsByIdLimit(context.Background(), tableName, startId, limit)
 }
 
-func SelectAllByIdx(tableName string, columnName string, columnValue []byte) (_db []*DataBean, err error) {
-	return TlClient.Conn.SelectAllByIdx(context.Background(), tableName, columnName, columnValue)
+func (this *Client) SelectAllByIdx(tableName string, columnName string, columnValue []byte) (_db []*DataBean, err error) {
+	return this.selectAllByIdx(context.Background(), tableName, columnName, columnValue)
 }
 
-func SelectByIdxLimit(tableName string, columnName string, columnValue [][]byte, startId, limit int64) (_db []*DataBean, err error) {
-	return TlClient.Conn.SelectByIdxLimit(context.Background(), tableName, columnName, columnValue, startId, limit)
+func (this *Client) SelectByIdxLimit(tableName string, columnName string, columnValue [][]byte, startId, limit int64) (_db []*DataBean, err error) {
+	return this.selectByIdxLimit(context.Background(), tableName, columnName, columnValue, startId, limit)
 }
 
-func Update(tableName string, id int64, columnsMap map[string][]byte) (_err error) {
+func (this *Client) Update(tableName string, id int64, columnsMap map[string][]byte) (_err error) {
 	tb := &TableBean{}
 	tb.Name = tableName
 	tb.ID = &id
 	tb.Columns = columnsMap
-	if ack, err := TlClient.Conn.Update(context.Background(), tb); err == nil {
+	if ack, err := this.update(context.Background(), tb); err == nil {
 		if !ack.Ack.Ok {
 			_err = errors.New(ack.Ack.ErrorDesc)
 		}
@@ -112,10 +112,10 @@ func Update(tableName string, id int64, columnsMap map[string][]byte) (_err erro
 	return
 }
 
-func Delete(tableName string, id int64) (_err error) {
+func (this *Client) Delete(tableName string, id int64) (_err error) {
 	tb := &TableBean{}
 	tb.Name, tb.ID = tableName, &id
-	if ack, err := TlClient.Conn.Delete(context.Background(), tb); err == nil {
+	if ack, err := this.delete(context.Background(), tb); err == nil {
 		if !ack.Ack.Ok {
 			_err = errors.New(ack.Ack.ErrorDesc)
 		}
@@ -125,16 +125,16 @@ func Delete(tableName string, id int64) (_err error) {
 	return
 }
 
-func ShowAllTables() (_r []*TableBean, _err error) {
-	return TlClient.Conn.ShowAllTables(context.Background())
+func (this *Client) ShowAllTables() (_r []*TableBean, _err error) {
+	return this.showAllTables(context.Background())
 }
 
-func ShowTable(tablename string) (_r *TableBean, _err error) {
-	return TlClient.Conn.ShowTable(context.Background(), tablename)
+func (this *Client) ShowTable(tablename string) (_r *TableBean, _err error) {
+	return this.showTable(context.Background(), tablename)
 }
 
-func Truncate(tablename string) (_err error) {
-	if ack, err := TlClient.Conn.Truncate(context.Background(), tablename); err == nil {
+func (this *Client) Truncate(tablename string) (_err error) {
+	if ack, err := this.truncate(context.Background(), tablename); err == nil {
 		if !ack.Ok {
 			_err = errors.New(ack.ErrorDesc)
 		}
