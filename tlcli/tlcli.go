@@ -871,7 +871,7 @@ type Icli interface {
   Alter(ctx context.Context, tb *TableBean) (_r *Ack, _err error)
   // Parameters:
   //  - Name
-  Truncate(ctx context.Context, name string) (_r *Ack, _err error)
+  Drop(ctx context.Context, name string) (_r *Ack, _err error)
   // Parameters:
   //  - Name
   //  - ID
@@ -1022,12 +1022,12 @@ func (p *IcliClient) Alter(ctx context.Context, tb *TableBean) (_r *Ack, _err er
 
 // Parameters:
 //  - Name
-func (p *IcliClient) Truncate(ctx context.Context, name string) (_r *Ack, _err error) {
-  var _args25 IcliTruncateArgs
+func (p *IcliClient) Drop(ctx context.Context, name string) (_r *Ack, _err error) {
+  var _args25 IcliDropArgs
   _args25.Name = name
-  var _result27 IcliTruncateResult
+  var _result27 IcliDropResult
   var _meta26 thrift.ResponseMeta
-  _meta26, _err = p.Client_().Call(ctx, "Truncate", &_args25, &_result27)
+  _meta26, _err = p.Client_().Call(ctx, "Drop", &_args25, &_result27)
   p.SetLastResponseMeta_(_meta26)
   if _err != nil {
     return
@@ -1035,7 +1035,7 @@ func (p *IcliClient) Truncate(ctx context.Context, name string) (_r *Ack, _err e
   if _ret28 := _result27.GetSuccess(); _ret28 != nil {
     return _ret28, nil
   }
-  return nil, thrift.NewTApplicationException(thrift.MISSING_RESULT, "Truncate failed: unknown result")
+  return nil, thrift.NewTApplicationException(thrift.MISSING_RESULT, "Drop failed: unknown result")
 }
 
 // Parameters:
@@ -1250,7 +1250,7 @@ func NewIcliProcessor(handler Icli) *IcliProcessor {
   self65.processorMap["Auth"] = &icliProcessorAuth{handler:handler}
   self65.processorMap["Create"] = &icliProcessorCreate{handler:handler}
   self65.processorMap["Alter"] = &icliProcessorAlter{handler:handler}
-  self65.processorMap["Truncate"] = &icliProcessorTruncate{handler:handler}
+  self65.processorMap["Drop"] = &icliProcessorDrop{handler:handler}
   self65.processorMap["SelectById"] = &icliProcessorSelectById{handler:handler}
   self65.processorMap["SelectByIdx"] = &icliProcessorSelectByIdx{handler:handler}
   self65.processorMap["SelectsByIdLimit"] = &icliProcessorSelectsByIdLimit{handler:handler}
@@ -1641,17 +1641,17 @@ func (p *icliProcessorAlter) Process(ctx context.Context, seqId int32, iprot, op
   return true, err
 }
 
-type icliProcessorTruncate struct {
+type icliProcessorDrop struct {
   handler Icli
 }
 
-func (p *icliProcessorTruncate) Process(ctx context.Context, seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
+func (p *icliProcessorDrop) Process(ctx context.Context, seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
   var _write_err75 error
-  args := IcliTruncateArgs{}
+  args := IcliDropArgs{}
   if err2 := args.Read(ctx, iprot); err2 != nil {
     iprot.ReadMessageEnd(ctx)
     x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err2.Error())
-    oprot.WriteMessageBegin(ctx, "Truncate", thrift.EXCEPTION, seqId)
+    oprot.WriteMessageBegin(ctx, "Drop", thrift.EXCEPTION, seqId)
     x.Write(ctx, oprot)
     oprot.WriteMessageEnd(ctx)
     oprot.Flush(ctx)
@@ -1685,15 +1685,15 @@ func (p *icliProcessorTruncate) Process(ctx context.Context, seqId int32, iprot,
     }(tickerCtx, cancel)
   }
 
-  result := IcliTruncateResult{}
-  if retval, err2 := p.handler.Truncate(ctx, args.Name); err2 != nil {
+  result := IcliDropResult{}
+  if retval, err2 := p.handler.Drop(ctx, args.Name); err2 != nil {
     tickerCancel()
     err = thrift.WrapTException(err2)
     if errors.Is(err2, thrift.ErrAbandonRequest) {
       return false, thrift.WrapTException(err2)
     }
-    _exc76 := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing Truncate: " + err2.Error())
-    if err2 := oprot.WriteMessageBegin(ctx, "Truncate", thrift.EXCEPTION, seqId); err2 != nil {
+    _exc76 := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing Drop: " + err2.Error())
+    if err2 := oprot.WriteMessageBegin(ctx, "Drop", thrift.EXCEPTION, seqId); err2 != nil {
       _write_err75 = thrift.WrapTException(err2)
     }
     if err2 := _exc76.Write(ctx, oprot); _write_err75 == nil && err2 != nil {
@@ -1713,7 +1713,7 @@ func (p *icliProcessorTruncate) Process(ctx context.Context, seqId int32, iprot,
     result.Success = retval
   }
   tickerCancel()
-  if err2 := oprot.WriteMessageBegin(ctx, "Truncate", thrift.REPLY, seqId); err2 != nil {
+  if err2 := oprot.WriteMessageBegin(ctx, "Drop", thrift.REPLY, seqId); err2 != nil {
     _write_err75 = thrift.WrapTException(err2)
   }
   if err2 := result.Write(ctx, oprot); _write_err75 == nil && err2 != nil {
@@ -3414,19 +3414,19 @@ func (p *IcliAlterResult) String() string {
 
 // Attributes:
 //  - Name
-type IcliTruncateArgs struct {
+type IcliDropArgs struct {
   Name string `thrift:"name,1" db:"name" json:"name"`
 }
 
-func NewIcliTruncateArgs() *IcliTruncateArgs {
-  return &IcliTruncateArgs{}
+func NewIcliDropArgs() *IcliDropArgs {
+  return &IcliDropArgs{}
 }
 
 
-func (p *IcliTruncateArgs) GetName() string {
+func (p *IcliDropArgs) GetName() string {
   return p.Name
 }
-func (p *IcliTruncateArgs) Read(ctx context.Context, iprot thrift.TProtocol) error {
+func (p *IcliDropArgs) Read(ctx context.Context, iprot thrift.TProtocol) error {
   if _, err := iprot.ReadStructBegin(ctx); err != nil {
     return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
   }
@@ -3464,7 +3464,7 @@ func (p *IcliTruncateArgs) Read(ctx context.Context, iprot thrift.TProtocol) err
   return nil
 }
 
-func (p *IcliTruncateArgs)  ReadField1(ctx context.Context, iprot thrift.TProtocol) error {
+func (p *IcliDropArgs)  ReadField1(ctx context.Context, iprot thrift.TProtocol) error {
   if v, err := iprot.ReadString(ctx); err != nil {
   return thrift.PrependError("error reading field 1: ", err)
 } else {
@@ -3473,8 +3473,8 @@ func (p *IcliTruncateArgs)  ReadField1(ctx context.Context, iprot thrift.TProtoc
   return nil
 }
 
-func (p *IcliTruncateArgs) Write(ctx context.Context, oprot thrift.TProtocol) error {
-  if err := oprot.WriteStructBegin(ctx, "Truncate_args"); err != nil {
+func (p *IcliDropArgs) Write(ctx context.Context, oprot thrift.TProtocol) error {
+  if err := oprot.WriteStructBegin(ctx, "Drop_args"); err != nil {
     return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
   if p != nil {
     if err := p.writeField1(ctx, oprot); err != nil { return err }
@@ -3486,7 +3486,7 @@ func (p *IcliTruncateArgs) Write(ctx context.Context, oprot thrift.TProtocol) er
   return nil
 }
 
-func (p *IcliTruncateArgs) writeField1(ctx context.Context, oprot thrift.TProtocol) (err error) {
+func (p *IcliDropArgs) writeField1(ctx context.Context, oprot thrift.TProtocol) (err error) {
   if err := oprot.WriteFieldBegin(ctx, "name", thrift.STRING, 1); err != nil {
     return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:name: ", p), err) }
   if err := oprot.WriteString(ctx, string(p.Name)); err != nil {
@@ -3496,35 +3496,35 @@ func (p *IcliTruncateArgs) writeField1(ctx context.Context, oprot thrift.TProtoc
   return err
 }
 
-func (p *IcliTruncateArgs) String() string {
+func (p *IcliDropArgs) String() string {
   if p == nil {
     return "<nil>"
   }
-  return fmt.Sprintf("IcliTruncateArgs(%+v)", *p)
+  return fmt.Sprintf("IcliDropArgs(%+v)", *p)
 }
 
 // Attributes:
 //  - Success
-type IcliTruncateResult struct {
+type IcliDropResult struct {
   Success *Ack `thrift:"success,0" db:"success" json:"success,omitempty"`
 }
 
-func NewIcliTruncateResult() *IcliTruncateResult {
-  return &IcliTruncateResult{}
+func NewIcliDropResult() *IcliDropResult {
+  return &IcliDropResult{}
 }
 
-var IcliTruncateResult_Success_DEFAULT *Ack
-func (p *IcliTruncateResult) GetSuccess() *Ack {
+var IcliDropResult_Success_DEFAULT *Ack
+func (p *IcliDropResult) GetSuccess() *Ack {
   if !p.IsSetSuccess() {
-    return IcliTruncateResult_Success_DEFAULT
+    return IcliDropResult_Success_DEFAULT
   }
 return p.Success
 }
-func (p *IcliTruncateResult) IsSetSuccess() bool {
+func (p *IcliDropResult) IsSetSuccess() bool {
   return p.Success != nil
 }
 
-func (p *IcliTruncateResult) Read(ctx context.Context, iprot thrift.TProtocol) error {
+func (p *IcliDropResult) Read(ctx context.Context, iprot thrift.TProtocol) error {
   if _, err := iprot.ReadStructBegin(ctx); err != nil {
     return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
   }
@@ -3562,7 +3562,7 @@ func (p *IcliTruncateResult) Read(ctx context.Context, iprot thrift.TProtocol) e
   return nil
 }
 
-func (p *IcliTruncateResult)  ReadField0(ctx context.Context, iprot thrift.TProtocol) error {
+func (p *IcliDropResult)  ReadField0(ctx context.Context, iprot thrift.TProtocol) error {
   p.Success = &Ack{}
   if err := p.Success.Read(ctx, iprot); err != nil {
     return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Success), err)
@@ -3570,8 +3570,8 @@ func (p *IcliTruncateResult)  ReadField0(ctx context.Context, iprot thrift.TProt
   return nil
 }
 
-func (p *IcliTruncateResult) Write(ctx context.Context, oprot thrift.TProtocol) error {
-  if err := oprot.WriteStructBegin(ctx, "Truncate_result"); err != nil {
+func (p *IcliDropResult) Write(ctx context.Context, oprot thrift.TProtocol) error {
+  if err := oprot.WriteStructBegin(ctx, "Drop_result"); err != nil {
     return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
   if p != nil {
     if err := p.writeField0(ctx, oprot); err != nil { return err }
@@ -3583,7 +3583,7 @@ func (p *IcliTruncateResult) Write(ctx context.Context, oprot thrift.TProtocol) 
   return nil
 }
 
-func (p *IcliTruncateResult) writeField0(ctx context.Context, oprot thrift.TProtocol) (err error) {
+func (p *IcliDropResult) writeField0(ctx context.Context, oprot thrift.TProtocol) (err error) {
   if p.IsSetSuccess() {
     if err := oprot.WriteFieldBegin(ctx, "success", thrift.STRUCT, 0); err != nil {
       return thrift.PrependError(fmt.Sprintf("%T write field begin error 0:success: ", p), err) }
@@ -3596,11 +3596,11 @@ func (p *IcliTruncateResult) writeField0(ctx context.Context, oprot thrift.TProt
   return err
 }
 
-func (p *IcliTruncateResult) String() string {
+func (p *IcliDropResult) String() string {
   if p == nil {
     return "<nil>"
   }
-  return fmt.Sprintf("IcliTruncateResult(%+v)", *p)
+  return fmt.Sprintf("IcliDropResult(%+v)", *p)
 }
 
 // Attributes:
