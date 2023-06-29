@@ -156,7 +156,7 @@ func (this *Client) alter(ctx context.Context, tb *TableBean) (_r *Ack, _err err
 
 // Parameters:
 //   - Name
-func (this *Client) truncate(ctx context.Context, name string) (_r *Ack, _err error) {
+func (this *Client) drop(ctx context.Context, name string) (_r *Ack, _err error) {
 	defer _recover()
 	defer this.mux.Unlock()
 	this.mux.Lock()
