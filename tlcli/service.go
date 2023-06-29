@@ -160,7 +160,7 @@ func (this *Client) truncate(ctx context.Context, name string) (_r *Ack, _err er
 	defer _recover()
 	defer this.mux.Unlock()
 	this.mux.Lock()
-	return this.Conn.Truncate(ctx, name)
+	return this.Conn.Drop(ctx, name)
 }
 
 // Parameters:
