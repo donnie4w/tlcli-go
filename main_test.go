@@ -15,8 +15,8 @@ import (
 )
 
 func Test_cli(t *testing.T) {
-	if client, err := tlcli.NewConnect(false, "192.168.2.108:7001", "mycli=123"); err == nil {
-		err = client.Truncate("table")
+	if client, err := tlcli.NewConnect(true, "192.168.2.108:7000", "mycli=123"); err == nil {
+		err = client.Drop("pyuser")
 		logging.Error(err)
 		client.CreateTable("user", []string{"name", "age", "level", "type"}, []string{"name", "age", "type"})
 		dbs, _ := client.ShowAllTables()
@@ -24,7 +24,7 @@ func Test_cli(t *testing.T) {
 		logging.Debug("-------------------------------------------------------------------")
 		for k := int64(0); k < 8; k++ {
 			go func() {
-				for i := int64(0); i < 1000; i++ {
+				for i := int64(0); i < 1; i++ {
 					ms := make(map[string][]byte, 0)
 					ms["name"], ms["age"], ms["level"], ms["type"] = []byte("wuxiaodong"), []byte(fmt.Sprint(20+i)), []byte(fmt.Sprint("level", i)), []byte(fmt.Sprint(i%2))
 					if seq, err := client.Insert("user", ms); err == nil {
