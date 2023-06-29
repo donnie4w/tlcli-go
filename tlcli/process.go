@@ -133,8 +133,8 @@ func (this *Client) ShowTable(tablename string) (_r *TableBean, _err error) {
 	return this.showTable(context.Background(), tablename)
 }
 
-func (this *Client) Truncate(tablename string) (_err error) {
-	if ack, err := this.truncate(context.Background(), tablename); err == nil {
+func (this *Client) Drop(tablename string) (_err error) {
+	if ack, err := this.drop(context.Background(), tablename); err == nil {
 		if !ack.Ok {
 			_err = errors.New(ack.ErrorDesc)
 		}
