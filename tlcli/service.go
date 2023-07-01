@@ -165,6 +165,15 @@ func (this *Client) drop(ctx context.Context, name string) (_r *Ack, _err error)
 
 // Parameters:
 //   - Name
+func (this *Client) selectId(ctx context.Context, name string) (_r int64, _err error) {
+	defer _recover()
+	defer this.mux.Unlock()
+	this.mux.Lock()
+	return this.Conn.SelectId(ctx, name)
+}
+
+// Parameters:
+//   - Name
 //   - ID
 func (this *Client) selectById(ctx context.Context, name string, id int64) (_r *DataBean, _err error) {
 	defer _recover()
