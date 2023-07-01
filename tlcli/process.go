@@ -77,6 +77,10 @@ func (this *Client) Insert(tableName string, columnsMap map[string][]byte) (seq 
 	return
 }
 
+func (this *Client) SelectId(tableName string) (id int64, err error) {
+	return this.selectId(context.Background(), tableName)
+}
+
 func (this *Client) SelectById(tableName string, id int64) (_db *DataBean, err error) {
 	return this.selectById(context.Background(), tableName, id)
 }
