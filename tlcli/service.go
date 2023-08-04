@@ -174,6 +174,15 @@ func (this *Client) selectId(ctx context.Context, name string) (_r int64, _err e
 
 // Parameters:
 //   - Name
+func (this *Client) selectIdByIdx(ctx context.Context, name string, column string, value []byte) (_r int64, _err error) {
+	defer _recover()
+	defer this.mux.Unlock()
+	this.mux.Lock()
+	return this.Conn.SelectIdByIdx(ctx, name, column, value)
+}
+
+// Parameters:
+//   - Name
 //   - ID
 func (this *Client) selectById(ctx context.Context, name string, id int64) (_r *DataBean, _err error) {
 	defer _recover()

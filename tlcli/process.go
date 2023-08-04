@@ -81,6 +81,10 @@ func (this *Client) SelectId(tableName string) (id int64, err error) {
 	return this.selectId(context.Background(), tableName)
 }
 
+func (this *Client) SelectIdByIdx(tableName string, columnName string, columnValue []byte) (id int64, err error) {
+	return this.selectIdByIdx(context.Background(), tableName, columnName, columnValue)
+}
+
 func (this *Client) SelectById(tableName string, id int64) (_db *DataBean, err error) {
 	return this.selectById(context.Background(), tableName, id)
 }
