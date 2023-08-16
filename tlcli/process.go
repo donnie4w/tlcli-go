@@ -11,12 +11,12 @@ import (
 	"errors"
 )
 
-func (this *Client) CreateTable(tableName string, columnsName []string, indexs []string) (err error) {
+func (this *Client) CreateTable(tableName string, columnsName map[string]COLUMNTYPE, indexs []string) (err error) {
 	tb := &TableBean{}
 	tb.Name = tableName
 	tb.Columns = make(map[string][]byte, 0)
-	for _, s := range columnsName {
-		tb.Columns[s] = nil
+	for k, v := range columnsName {
+		tb.Columns[k] = []byte(v)
 	}
 	if indexs != nil {
 		tb.Idx = make(map[string]int8, 0)
@@ -36,12 +36,12 @@ func (this *Client) CreateTable(tableName string, columnsName []string, indexs [
 	return
 }
 
-func (this *Client) AlterTable(tableName string, columnsName []string, indexs []string) (err error) {
+func (this *Client) AlterTable(tableName string, columnsName map[string]COLUMNTYPE, indexs []string) (err error) {
 	tb := &TableBean{}
 	tb.Name = tableName
 	tb.Columns = make(map[string][]byte, 0)
-	for _, s := range columnsName {
-		tb.Columns[s] = nil
+	for k, v := range columnsName {
+		tb.Columns[k] = []byte(v)
 	}
 	if indexs != nil {
 		tb.Idx = make(map[string]int8, 0)
