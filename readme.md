@@ -2,7 +2,7 @@
 
 ------------
 
-See the example at  http://tlnet.top/tlcli
+See the example at  https://tlnet.top/tlcli
 
 ```go
 实例化，新建连接
