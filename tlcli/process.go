@@ -151,3 +151,41 @@ func (this *Client) Drop(tablename string) (_err error) {
 	}
 	return
 }
+
+// Parameters:
+//   - Name
+//   - Ids
+func (this *Client) DeleteBatch(name string, ids ...int64) (_err error) {
+	if ack, err := this.deleteBatch(context.Background(), name, ids...); err == nil {
+		if !ack.Ack.Ok {
+			_err = errors.New(ack.Ack.ErrorDesc)
+		}
+	} else {
+		_err = err
+	}
+	return
+}
+
+//Index fields that are updated frequently are not suitable for this method and may result in sorting errors
+//频繁更新的索引字段不适合此方法，并且可能导致排序错误
+// Parameters:
+//   - Name
+//   - Column
+//   - Value
+//   - StartId
+//   - Limit
+func (this *Client) SelectByIdxDescLimit(name string, column string, value []byte, startId int64, limit int64) (_r []*DataBean, _err error) {
+	return this.selectByIdxDescLimit(context.Background(), name, column, value, startId, limit)
+}
+
+//Index fields that are updated frequently are not suitable for this method and may result in sorting errors
+//频繁更新的索引字段不适合此方法，并且可能导致排序错误
+// Parameters:
+//   - Name
+//   - Column
+//   - Value
+//   - StartId
+//   - Limit
+func (this *Client) SelectByIdxAscLimit(name string, column string, value []byte, startId int64, limit int64) (_r []*DataBean, _err error) {
+	return this.selectByIdxAscLimit(context.Background(), name, column, value, startId, limit)
+}
