@@ -50,8 +50,8 @@ func (this *Client) Link(hostPort, auth string, TLS bool) (err error) {
 			if err = useTransport.Open(); err == nil {
 				this.hostPort = hostPort
 				this.transport = useTransport
-				this.Conn = NewIcliClientFactory(useTransport, thrift.NewTCompactProtocolFactory())
-				<-time.After(1 * time.Second)
+				this.Conn = NewIcliClientFactory(useTransport, thrift.NewTCompactProtocolFactoryConf(&thrift.TConfiguration{}))
+				<-time.After(time.Second)
 				this._pingNum = 0
 				err = this.auth()
 			}
@@ -277,6 +277,43 @@ func (this *Client) showAllTables(ctx context.Context) (_r []*TableBean, _err er
 	defer this.mux.Unlock()
 	this.mux.Lock()
 	return this.Conn.ShowAllTables(ctx)
+}
+
+// Parameters:
+//   - Name
+//   - Ids
+func (this *Client) deleteBatch(ctx context.Context, name string, ids ...int64) (_r *AckBean, _err error) {
+	defer _recover()
+	defer this.mux.Unlock()
+	this.mux.Lock()
+	return this.Conn.DeleteBatch(ctx, name, ids)
+}
+
+// Parameters:
+//   - Name
+//   - Column
+//   - Value
+//   - StartId
+//   - Limit
+func (this *Client) selectByIdxDescLimit(ctx context.Context, name string, column string, value []byte, startId int64, limit int64) (_r []*DataBean, _err error) {
+	defer _recover()
+	defer this.mux.Unlock()
+	this.mux.Lock()
+	return this.Conn.SelectByIdxDescLimit(ctx, name, column, value, startId, limit)
+}
+
+
+// Parameters:
+//   - Name
+//   - Column
+//   - Value
+//   - StartId
+//   - Limit
+func (this *Client) selectByIdxAscLimit(ctx context.Context, name string, column string, value []byte, startId int64, limit int64) (_r []*DataBean, _err error) {
+	defer _recover()
+	defer this.mux.Unlock()
+	this.mux.Lock()
+	return this.Conn.SelectByIdxAscLimit(ctx, name, column, value, startId, limit)
 }
 
 func _recover() {
