@@ -166,8 +166,8 @@ func (this *Client) DeleteBatch(name string, ids ...int64) (_err error) {
 	return
 }
 
-//Index fields that are updated frequently are not suitable for this method and may result in sorting errors
-//频繁更新的索引字段不适合此方法，并且可能导致排序错误
+// Index fields that are updated frequently are not suitable for this method and may result in sorting errors
+// 频繁更新的索引字段不适合此方法，并且可能导致排序错误
 // Parameters:
 //   - Name
 //   - Column
@@ -178,8 +178,8 @@ func (this *Client) SelectByIdxDescLimit(name string, column string, value []byt
 	return this.selectByIdxDescLimit(context.Background(), name, column, value, startId, limit)
 }
 
-//Index fields that are updated frequently are not suitable for this method and may result in sorting errors
-//频繁更新的索引字段不适合此方法，并且可能导致排序错误
+// Index fields that are updated frequently are not suitable for this method and may result in sorting errors
+// 频繁更新的索引字段不适合此方法，并且可能导致排序错误
 // Parameters:
 //   - Name
 //   - Column
@@ -188,4 +188,13 @@ func (this *Client) SelectByIdxDescLimit(name string, column string, value []byt
 //   - Limit
 func (this *Client) SelectByIdxAscLimit(name string, column string, value []byte, startId int64, limit int64) (_r []*DataBean, _err error) {
 	return this.selectByIdxAscLimit(context.Background(), name, column, value, startId, limit)
+}
+
+// Parameters:
+//   - Name
+//   - Column
+//   - Value
+//   - Seq
+func (this *Client) SelectIdByIdxSeq(name string, column string, value []byte, seq int64) (_r int64, _err error) {
+	return this.selectIdByIdxSeq(context.Background(), name, column, value, seq)
 }
