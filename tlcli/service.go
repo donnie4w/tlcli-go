@@ -302,7 +302,6 @@ func (this *Client) selectByIdxDescLimit(ctx context.Context, name string, colum
 	return this.Conn.SelectByIdxDescLimit(ctx, name, column, value, startId, limit)
 }
 
-
 // Parameters:
 //   - Name
 //   - Column
@@ -314,6 +313,18 @@ func (this *Client) selectByIdxAscLimit(ctx context.Context, name string, column
 	defer this.mux.Unlock()
 	this.mux.Lock()
 	return this.Conn.SelectByIdxAscLimit(ctx, name, column, value, startId, limit)
+}
+
+// Parameters:
+//   - Name
+//   - Column
+//   - Value
+//   - Seq
+func (this *Client) selectIdByIdxSeq(ctx context.Context, name string, column string, value []byte, seq int64) (_r int64, _err error) {
+	defer _recover()
+	defer this.mux.Unlock()
+	this.mux.Lock()
+	return this.Conn.SelectIdByIdxSeq(ctx, name, column, value, seq)
 }
 
 func _recover() {
